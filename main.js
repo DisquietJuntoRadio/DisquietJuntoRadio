@@ -35,7 +35,7 @@ function SCoperator() {
 	this.artist_data = {};
 	this.gotTracks = null;
 	
-	this.mediaCheck = function(self) { return (self.carts > 0); };
+	this.mediaCheck = function(self) { return (self.carts > 4); };
 	
 	this.tracks = 0;
 	this.carts = 0;
@@ -97,12 +97,16 @@ SCoperator.prototype.lightTrack = function(trackElement) {
 
 SCoperator.prototype.actOnMedia = function(self) {
 	livePlayer = $("#audio");	
-	if ( livePlayer && (livePlayer.prop("readyState") > 0) && !livePlayer.prop("ended") ) { return true; }
+	if ( livePlayer 
+		//&& (livePlayer.prop("readyState") > 0) 
+		&& ( livePlayer.prop("currentSrc") || ( livePlayer.prop("readyState") > 0 ) )
+		&& !livePlayer.prop("ended") ) { return true; }
 	
 	var chooseFrom = $(".sound-tile").length;
 	var chosen = Math.floor(Math.random() * chooseFrom);
 	var chosentile = $(".sound-tile:eq("+chosen+")");
 	if (chosentile.position() == null) { return true; }
+	
 	self.playTrack(chosentile[0]);	
 	$("#TrackList").animate({
         scrollTop: $("#TrackList").scrollTop() + chosentile.position().top - ($("#TrackList").height() / 2 ) - (chosentile.height() * 3.5 )
@@ -118,7 +122,7 @@ SCoperator.prototype.getThings = function(things, dowith) {
 	if (self.auto_paginate !== null) {
 		thingsToGet = self.auto_paginate;
 			} else {
-			thingsToGet = self.mainAPI + "users/" + self.artist_id + "/" + things + "?client_id=" + self.client_id + "&linked_partitioning=1";
+			thingsToGet = self.mainAPI + "users/" + self.artist_id + "/" + things + "?client_id=" + self.client_id + "&linked_partitioning=1&limit=5";
 			}	
 	self.thingGetting = $.get(
 		self.corsProxy + thingsToGet,{}
