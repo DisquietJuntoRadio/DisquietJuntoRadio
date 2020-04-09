@@ -35,7 +35,7 @@ function SCoperator() {
 	this.artist_data = {};
 	this.gotTracks = null;
 	
-	this.mediaCheck = function(self) { return (self.carts > 1); };
+	this.mediaCheck = function(self) { return (self.carts > 0); };
 	
 	this.tracks = 0;
 	this.carts = 0;
@@ -71,6 +71,7 @@ SCoperator.prototype.resolveArtistTracks = function(thendo) {
 
 
 SCoperator.prototype.playTrack = function(trackElement) {
+		if(trackElement == null) { return; }
 		  var audio = document.getElementById('audio');
 		  var source = document.getElementById('audioSource');
 		  source.src = trackElement.getAttribute('data-value');
@@ -96,18 +97,18 @@ SCoperator.prototype.lightTrack = function(trackElement) {
 
 SCoperator.prototype.actOnMedia = function(self) {
 	livePlayer = $("#audio");	
-	if ( livePlayer && (livePlayer.prop("readyState") > 0) && !livePlayer.prop("ended") ) { return ; }
+	if ( livePlayer && (livePlayer.prop("readyState") > 0) && !livePlayer.prop("ended") ) { return true; }
 	
 	var chooseFrom = $(".sound-tile").length;
 	var chosen = Math.floor(Math.random() * chooseFrom);
 	var chosentile = $(".sound-tile:eq("+chosen+")");
+	if (chosentile.position() == null) { return true; }
 	self.playTrack(chosentile[0]);	
 	$("#TrackList").animate({
         scrollTop: $("#TrackList").scrollTop() + chosentile.position().top - ($("#TrackList").height() / 2 ) - (chosentile.height() * 3.5 )
     }, 4000);
 	
-	//self.lightTrack(chosenTile[0]);
-	return ;
+	return true;
 	}
 
 SCoperator.prototype.getThings = function(things, dowith) {
@@ -192,9 +193,11 @@ SCoperator.prototype.getClient = function() {
     var self = this;
 	// V.1 von https://jsbin.com/fixabomefe/edit?html,console
 	// The client ID used there is used in the test environment for an OSS Soundcloud library
+	// It is ugly, but these keys are all over the world?
+	// We could get a new/fresh each time, but then need to use API2 and deal with CORS, per below
 		   self.client_id =  "08f79801a998c381762ec5b15e4914d5";
 		   return;
-	
+	/*
 	// V.2 is 'public' but it needs CORS proxy :(
     self.initialising = $.get(
 		"https://a-v2.sndcdn.com/assets/48-2160c10a-3.js",{}
@@ -207,6 +210,7 @@ SCoperator.prototype.getClient = function() {
 		.fail(function(jqXHR, textStatus, errorThrown) {
 			self.stayAlert("SC client request " + textStatus + " " + errorThrown);
 			});
+			*/
 		   
 };
 
