@@ -1,151 +1,148 @@
+body {
+	background-color: #a9bdac;
+	max-height: 92vh;
+	overflow: hidden;
+	font: 10pt Arial;
+}
 
-		body {
-		background-color:#a9bdac;
-		max-height: 92vh;
-		overflow: hidden;
-		font: 10pt Arial;
-		}
-		
-		.player-bar {
-			width: 65vw;
-			height: 26px;
-			}
-			
-			
-		.page-container {
-		  display: flex;
-		  flex-direction: column;
-		  align-items: center;;
-			width: 98%;
-			border: 10px;
-			margin: 0.5% 0.5% 0.5% 0.5%;
-			border: 4px solid #89acaf;
-			border-radius: 4%;
-			box-shadow: 1px 2px 24px azure;
-		}
+.player-bar {
+	width: 65vw;
+	height: 26px;
+}
 
-		.flex-container {
-		  display: flex;
-		  flex-direction: row;
-			flex-wrap: wrap;    
-			justify-content: center;
-			margin-left: 2px;
-			padding-left: 8%;
-			padding-right: 8%;
-			overflow: auto;
-			max-height: 48vh;
-		}
-		
-		.page-pack {  
-		margin: 8px 12px 8px 12px;
-		background-color:#789056;
-		  height: 2px;
-		  width: 90%;	
-		border-radius: 46%;
-		border: 3px solid white;
-		  
-		}
-		
-		.wave-container {
-		background-size: contain;
-		background-color: #9cf258;
-		display: none;
-		border-radius: 18%;
-		border: 4px solid #89acaf;
-		box-shadow: 1px 2px 18px azure;
-		object-fit: fill;
-		height: 10vh;
-		min-height: 24px;		
-		max-height: 42px;
-		width: 92vw;
-		  
-		}
-		
-		.UI-block {	  
-			display: flex;		  
-			flex-direction: row;
-			}
-		
-		
-		.station-box {
-			padding-left: 1vw;
-			padding-right: 1vw;
-			align-self: center;
-			}
-			
-			
-		.blurb-container {
-		border-radius: 18%;
-		border: 4px solid #89acaf;
-		box-shadow: 1px 2px 18px azure;
-		width:46vw; 
-			overflow: auto;
-		text-align:left; 
-		align-self:center; 
-		padding-left:5vw; 
-		padding-right:0.5vw;
-		margin-right:1vw;
-		min-height: 36px;		
-		max-height: 72px;	
-      }
-	  
-		.counters-box {
-		min-width:8vw; 
-		align-self:center;
-		}
-			.left-countertop {
-			font: 14pt Impact; padding-right: 1vw;  
-			}
-		
-			.left-counter {
-			font: 20pt Impact; padding-right: 1vw;  
-			}
-			
-			.right-countertop {
-			font: 14pt Impact; padding-left: 1vw; 
-			}
-			.right-counter {
-			font: 20pt Impact; padding-left: 1vw; 
-			}
-			
-			
-		.sound-tile {
-		background-size: contain;	
-		margin: 2px 2px 2px 2px;
-		border-radius: 100%;
-		border: 3px solid white;
-		  height: 3.5vw;
-		  min-height: 3.5vh;
-		  width: 3.5vw;
-		  min-width: 3.5vh;
-		  position: relative;
-			}
-			
-			/* Tooltip text */
-		.sound-tile .poptext {
-		  visibility: hidden;
-		  max-width: 10vw;		  
-		  min-height: 42px;
-		  background-color:#99bcdc;
-		  color: #456756;
-		  text-align: center;
-		  padding: 5px 5px 5px 5px;;
-		  border-radius: 8%;
-			border: 2px solid white;
-		 
-		  /* Position the tooltip text - see examples below! */
-		  display: inline-block;
-		  position: relative;
-		  z-index: 1;
-		  
-			overflow-wrap: break-word;
-		  
-		  }
+.page-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 98%;
+	border: 10px;
+	margin: 0.5% 0.5% 0.5% 0.5%;
+	border: 4px solid #89acaf;
+	border-radius: 4%;
+	box-shadow: 1px 2px 24px azure;
+}
 
-		/* Show the tooltip text when you mouse over the tooltip container */
-		.sound-tile:hover .poptext {
-		  visibility: visible;
-		}
-		  
-				
-	
+.flex-container {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: center;
+	margin-left: 2px;
+	padding-left: 8%;
+	padding-right: 8%;
+	overflow: auto;
+	max-height: 48vh;
+}
+
+.page-pack {
+	margin: 8px 12px 8px 12px;
+	background-color: #789056;
+	height: 2px;
+	width: 90%;
+	border-radius: 46%;
+	border: 3px solid white;
+}
+
+.wave-container {
+	background-size: contain;
+	background-color: #9cf258;
+	display: none;
+	border-radius: 18%;
+	border: 4px solid #89acaf;
+	box-shadow: 1px 2px 18px azure;
+	object-fit: fill;
+	height: 10vh;
+	min-height: 24px;
+	max-height: 42px;
+	width: 92vw;
+}
+
+.UI-block {
+	display: flex;
+	flex-direction: row;
+}
+
+.station-box {
+	padding-left: 1vw;
+	padding-right: 1vw;
+	align-self: center;
+}
+
+.blurb-container {
+	border-radius: 18%;
+	border: 4px solid #89acaf;
+	box-shadow: 1px 2px 18px azure;
+	width: 46vw;
+	overflow: auto;
+	text-align: left;
+	align-self: center;
+	padding-left: 5vw;
+	padding-right: 0.5vw;
+	margin-right: 1vw;
+	min-height: 36px;
+	max-height: 72px;
+}
+
+.counters-box {
+	min-width: 8vw;
+	align-self: center;
+}
+
+.left-countertop {
+	font: 14pt Impact;
+	padding-right: 1vw;
+}
+
+.left-counter {
+	font: 20pt Impact;
+	padding-right: 1vw;
+}
+
+.right-countertop {
+	font: 14pt Impact;
+	padding-left: 1vw;
+}
+
+.right-counter {
+	font: 20pt Impact;
+	padding-left: 1vw;
+}
+
+.sound-tile {
+	background-size: contain;
+	margin: 2px 2px 2px 2px;
+	border-radius: 100%;
+	border: 3px solid white;
+	height: 3.5vw;
+	min-height: 3.5vh;
+	width: 3.5vw;
+	min-width: 3.5vh;
+	position: relative;
+}
+
+
+/* Tooltip text */
+
+.sound-tile .poptext {
+	visibility: hidden;
+	max-width: 10vw;
+	min-height: 42px;
+	background-color: #99bcdc;
+	color: #456756;
+	text-align: center;
+	padding: 5px 5px 5px 5px;
+	border-radius: 8%;
+	border: 2px solid white;
+	/* Position the tooltip text - see examples below! */
+	display: inline-block;
+	position: relative;
+	z-index: 1;
+	overflow-wrap: break-word;
+}
+
+
+/* Show the tooltip text when you mouse over the tooltip container */
+
+.sound-tile:hover .poptext {
+	visibility: visible;
+}
