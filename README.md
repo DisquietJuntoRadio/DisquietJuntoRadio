@@ -20,6 +20,7 @@
  This repository's code is for experimental / proof-of-principle application only.
  
  It does not scrape pages, metadata or CDN's. It does not 'rip' streams.
+ It does not allow or apply user authentication and makes no user actions nor account changes.
  
  All code execution and web interactions occur on the end user's computing resources.
  There is no hosted execution, web interaction or data storage.
