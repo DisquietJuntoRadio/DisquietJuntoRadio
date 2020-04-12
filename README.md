@@ -1,4 +1,4 @@
-# DisquietRadio
+# Disquiet Junto 'Radio'
 
   - Client Side Endless Shuffle Player
   - demo at --> https://disquietjuntoradio.github.io/DisquietJuntoRadio/
