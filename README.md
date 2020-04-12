@@ -18,6 +18,7 @@
  https://developers.soundcloud.com/docs/api/terms-of-use 
  
  This repository's code is for experimental / proof-of-principle application only.
+ 
  It does not scrape pages, metadata or CDN's. It does not 'rip' streams.
  
  All code execution and web interactions occur on the end user's computing resources.
