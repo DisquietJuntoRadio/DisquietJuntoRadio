@@ -10,7 +10,7 @@ var SCrunning;
 $(function () {
 	SCrunning = null;
 	SCrunning = new SCoperator();
-	SCrunning.configAPI("V2");
+	SCrunning.configAPI("V1");
 
 
 	////////////////////////////////////////////////////////////////
