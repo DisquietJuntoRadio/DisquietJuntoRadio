@@ -3,10 +3,17 @@
   - Client Side Endless Shuffle Player
   - demo at --> https://disquietjuntoradio.github.io/DisquietJuntoRadio/
    
-   An example of js/jQuery/HTML access to Soundcloud API features for track streaming and metadata display.
-   The "DisquietRadio" combines tracks from the Disquiet Junto to create a random playlist.
+   An example of js/jQuery/HTML access to Soundcloud API features, for track streaming and metadata display.
+   The "DisquietJuntoRadio" combines tracks from the Disquiet Junto to create a random playlist.
    When selecting tracks, it animates creator icons and finds track waveforms.
-   While playing, it displays the creator track notes and provides a link to tracks' Soundcloud page.
+   While playing, it displays the creator track notes and provides a link to the track's Soundcloud page.
+   
+   The code is broken roughly into modules, along lines of API vs DOM allegiance - allowing a custom artist/play-list to be       configured with minimal(?) edits:
+ - to HTML for titles/icons/externalLinks
+ - and to main.js for Soundcloud resources
+ 
+   Styling can be adapted in .css, with attention paid to those .js modules with highest DOM dependence. (main, app, features) Essential API support comes from functions.js, with little implication to .css/DOM.
+ 
    
  -----------------------------------------------------------------------
  
