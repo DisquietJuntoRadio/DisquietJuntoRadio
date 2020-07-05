@@ -21,9 +21,9 @@ $(function () {
 	SCrunning.getClient(function () {
 		SCrunning.getArtist(function getItems(artist) {
 			// get all artist 'TRACK' entries:
-			SCrunning.rackArtist(self.rackTracks);
+			SCrunning.rackArtist(SCrunning.rackTracks);
 			// get optionally filtered playlists:
-			SCrunning.rackCarts(self.rackTracks);
+			SCrunning.rackCarts(SCrunning.rackTracks);
 		});
 	});
 
