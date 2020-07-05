@@ -19,11 +19,7 @@ $(function () {
 	SCrunning.artist = "disquiet";
 
 	SCrunning.getClient(function () {
-		SCrunning.resolve("https://soundcloud.com/" + SCrunning.artist, function (self, resolved) {
-			self.artist_id = resolved.id;
-			self.artist_data = {
-				avatar: resolved.avatar_url
-			};
+		SCrunning.getArtist(function getItems(artist) {
 			// get all artist 'TRACK' entries:
 			SCrunning.rackArtist(self.rackTracks);
 			// get optionally filtered playlists:
