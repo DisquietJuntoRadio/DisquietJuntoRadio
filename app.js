@@ -63,13 +63,14 @@ SCoperator.prototype.actOnMedia = function (self, chooseFrom) {
 	if (livePlayer
 		//&& (livePlayer.prop("readyState") > 0) 
 		&&
-		(livePlayer.prop("currentSrc") || (livePlayer.prop("readyState") > 0)) &&
+		(livePlayer.prop("currentSrc") || (livePlayer.prop("readyState") > 0) || self.rolling == true) &&
 		!livePlayer.prop("ended")) {
 		return false;
 	}
 
 	var chosen = Math.floor(Math.random() * chooseFrom);
 	var chosentile = $(".sound-tile:eq(" + chosen + ")");
+	self.rolling = false;
 	if (chosentile.position() == null) {
 		return false;
 	}
@@ -79,7 +80,7 @@ SCoperator.prototype.actOnMedia = function (self, chooseFrom) {
 		$("#TrackList").animate({
 			scrollTop: $("#TrackList").scrollTop() + chosentile.position().top - ($("#TrackList").height() / 2) - (chosentile.height() * 3.5)
 		}, 4000);
-
+		self.rolling = true;
 		return true;
 	} else {
 		setTimeout(function () {

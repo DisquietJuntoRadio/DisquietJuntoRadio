@@ -7,11 +7,13 @@
 
 SCoperator.prototype.tryAutoPlay = function () {
 	var self = this;
-	setTimeout(function () {
-		if (self.mediaCheck(self)) {
-			self.actOnMedia(self, $(".sound-tile").length);
-		}
-	}, self.mediaDelay);
+	if (self.mediaLaunch) {
+		setTimeout(function () {
+			if (self.mediaCheck(self)) {
+				self.actOnMedia(self, $(".sound-tile").length);
+			}
+		}, self.mediaDelay);
+	}
 }
 
 SCoperator.prototype.popTrack = function (self, pop) {

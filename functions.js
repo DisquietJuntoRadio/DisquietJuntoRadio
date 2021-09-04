@@ -5,7 +5,7 @@
 //////////////////////////////////////////////////////////////////
 
 function SCoperator() {
-	this.configAPI("V1");
+	this.configAPI("V2");
 
 	this.artist = "";
 	this.client_id = "";
@@ -16,11 +16,13 @@ function SCoperator() {
 	this.tracks = 0;
 	this.carts = 0;
 
-	this.pageSize = 45;
+	this.pageSize = 8;
+	this.mediaLaunch = true;
 	this.mediaDelay = 3000; // set time for delaying media launch
 	this.mediaCheck = function (self) { // set limit for delaying media launch
 		return (self.tracks > 1);
 	};
+	this.rolling = false;
 };
 
 
@@ -36,12 +38,20 @@ SCoperator.prototype.configAPI = function (API) {
 	if (this.API == "V1") {
 		this.corsProxy = "";
 	} else {
-		this.corsProxy = "https://cors-anywhere.herokuapp.com/";
+		// NOTE: public facing proxies are OK for dev/test
+		// but quickly burn up ... a serious application
+		// would offer it's own proxy, soley for V2 API connection
+
+		// this.corsProxy = "https://cors-anywhere.herokuapp.com/";		
+		this.corsProxy = "https://api.allorigins.win/raw?url=";
 	}
 
 	this.resolver = this.mainAPI + "resolve?url=";
 }
 
+SCoperator.prototype.spinURL = function (url) {
+	return url = (this.API == "V1") ? url : encodeURIComponent(url);
+}
 
 SCoperator.prototype.desiredThings = function () {
 	return {
@@ -61,7 +71,19 @@ SCoperator.prototype.getThings = function (requestedThings) {
 
 	if (requestedThings.auto_paginate !== null) {
 		thingsToGet = requestedThings.auto_paginate;
+		console.log(
+			"chasing more pages of "
+			+ requestedThings.from + " : " + requestedThings.things
+			+ " for " + requestedThings.thendo.name
+		);
 	} else {
+		console.log(
+			this.getThings.caller.name + " is getting "
+			+ requestedThings.things
+			+ (requestedThings.from ? " from " + requestedThings.from : "")
+			+ (requestedThings.paged ? " with paging" : "")
+			+ " for " + requestedThings.thendo.name
+		);
 		thingsToGet = self.mainAPI;
 		if (requestedThings.from !== "") {
 			thingsToGet += requestedThings.from + "/";
@@ -75,15 +97,31 @@ SCoperator.prototype.getThings = function (requestedThings) {
 		} //settings;
 	}
 	self.thingGetting = $.get(
-			self.corsProxy + thingsToGet, {}
-		)
+		self.corsProxy + self.spinURL(thingsToGet), {}
+	)
 		.done(function (data) {
 			requestedThings.thendo(self, data);
-			if (("next_href" in data) && data.next_href && requestedThings.paged) {
-				requestedThings.auto_paginate = self.corsProxy + data.next_href + "&client_id=" + self.client_id;
-				self.getThings(requestedThings);
+			if (requestedThings.paged) {
+				if (!("next_href" in data) && (data.collection.length >= self.pageSize)) {
+					offset = requestedThings.auto_paginate.match(/\&offset\=[0-9]*/g).pop();
+					console.log("Paging is manual from " + offset);
+					requestedThings.auto_paginate = requestedThings.auto_paginate.replace(offset, "");
+					numeric = parseInt(offset.match(/[0-9]{1,}/g).pop());
+					numeric = numeric + self.pageSize;
+					requestedThings.auto_paginate += "&offset=" + numeric;
+
+				} else {
+					console.log("Ending paging of " + requestedThings.things);
+					requestedThings.auto_paginate = null;
+				}
+				if (("next_href" in data) && data.next_href) {
+					console.log("Paging is explicit");
+					requestedThings.auto_paginate = self.corsProxy + self.spinURL(data.next_href + "&client_id=" + self.client_id);
+				}
+				if (requestedThings.auto_paginate) {
+					self.getThings(requestedThings);
+				}
 			}
-			requestedThings.auto_paginate = null;
 		})
 		.fail(function (jqxhr, textstatus, errorthrown) {
 			self.stayAlert("SC " + requestedThings.things + " " + textstatus + " " + errorthrown);
@@ -91,28 +129,61 @@ SCoperator.prototype.getThings = function (requestedThings) {
 };
 
 
-SCoperator.prototype.rackArtist = function (sendTo) {
+SCoperator.prototype.getArtist = function coregetter(actionArtist) {
+	var self = this;
+	var actionFor = self.artist;
+	self.resolve("https://soundcloud.com/" + actionFor, function (self, resolved) {
+		self.artist_id = resolved.id;
+		self.artist_data = {
+			avatar: resolved.avatar_url
+		};
+		actionArtist(actionFor);
+	});
+}
+
+
+SCoperator.prototype.searchExternals = function (artistSite) {
+	var self = this;
+	var queryString = window.location.search;
+	var external = queryString.match(/(?:\?|\&)(?:playlist)\=([^&]+)/g);
+	if (external) {
+		external = external.pop().match(/\=.*/g).pop().replace("=", "");
+		self.matchPlaylists = (self.matchPlaylists == null) ? [] : self.matchPlaylists;
+		self.matchPlaylists.push("https://soundcloud.com/" + artistSite + "/sets/" + external);
+		return true;
+	}
+	return false;
+}
+
+///////////////////////////
+// Will push forward into "sendTo()" all tracks by artist
+///////////////////////////
+SCoperator.prototype.rackArtist = function sitegetter(sendTo) {
 	var self = this;
 	var toGet;
 	toGet = self.desiredThings();
 	toGet.from = "users/" + self.artist_id;
 	toGet.things = "tracks";
-	toGet.thendo = function (self, data) {
-		self.carts++;
+	toGet.thendo = function artistscart(self, data) {
 		sendTo(self, data.collection, self.popTrack);
 		self.tryAutoPlay();
 	};
+	self.carts++;
 	SCrunning.getThings(toGet);
 }
 
-SCoperator.prototype.rackCarts = function (sendTo) {
+///////////////////////////
+// Will push forward into "sendTo()" all tracks of all playlists by artist, 
+// prone to self.matchPlaylists as filter
+///////////////////////////
+SCoperator.prototype.rackCarts = function cartmaker(sendTo) {
 	var self = this;
 	var toGet;
 	toGet = self.desiredThings();
 	toGet.from = "users/" + self.artist_id;
 	toGet.things = "playlists";
 	toGet.filter = "representation=id";
-	toGet.thendo = function (self, data) {
+	toGet.thendo = function listedcart(self, data) {
 		var playlists = data.collection;
 		for (var i = 0; i < playlists.length; i++) {
 			if ((self.matchPlaylists == null) || (self.matchPlaylists.indexOf(playlists[i].permalink_url) > -1)) {
@@ -125,7 +196,12 @@ SCoperator.prototype.rackCarts = function (sendTo) {
 	SCrunning.getThings(toGet);
 }
 
-SCoperator.prototype.rackTracks = function (self, data, addit) {
+///////////////////////////
+// Will push forward into "addit()" all meta of tracks, 
+// individually from list of track ids in "data"
+// via auto paging requests through the id list
+///////////////////////////
+SCoperator.prototype.rackTracks = function trackracker(self, data, addit) {
 	var gotTracks = data;
 	var idSet;
 	var idCount = 0;
@@ -147,7 +223,7 @@ SCoperator.prototype.rackTracks = function (self, data, addit) {
 		toGet.things = "tracks";
 		toGet.filter = "ids=" + idSet;
 		toGet.paged = false;
-		toGet.thendo = function (self, data) {
+		toGet.thendo = function trackaction(self, data) {
 			for (var j = 0; j < data.length; j++) {
 				addit(self, data[j]);
 			}
@@ -163,8 +239,8 @@ SCoperator.prototype.resolve = function (resource, dowith) {
 	self.resolved = null;
 
 	self.resolving = $.get(
-			self.corsProxy + toResolve, {}
-		)
+		self.corsProxy + self.spinURL(toResolve), {}
+	)
 		.done(function (data) {
 			dowith(self, data);
 		})
@@ -177,22 +253,48 @@ SCoperator.prototype.resolve = function (resource, dowith) {
 SCoperator.prototype.getClient = function (clientaction) {
 	var self = this;
 	if (self.API == "V1") {
-		// V.1 von https://jsbin.com/fixabomefe/edit?html,console
-		// The client ID used there is used in the test environment for an OSS Soundcloud library
-		// It is ugly.
+		// July 1st, 2021 by Rahul Rumalla
+		// All client id's in the wild have been redacted!
+		// so this is broken forever:
 		self.client_id = "08f79801a998c381762ec5b15e4914d5";
+		// see: https://developers.soundcloud.com/blog/security-updates-api
+			// As part of our continuous effort toward making improvements to our API 
+			// with the hope that we can relaunch API access to all developers, 
+			// we’re making some critical security improvements.
+				// 		Use Client Credentials Grant for Server-Side Integrations
+						// Currently, to access the public resources of the platform, server-side integrations 
+						// with our API only require a client_id in the URL’s query parameter. 
+						// We’ll be strengthening our authorization here by making all public resources on the API 
+						// only accessible to apps that have been authorized with the client_credentials grant. 
+						// This will enable the app to capture both the access_token and the refresh_token 
+						// to then fetch the resources from the API. 
+						// Please note that the use of client_id will be deprecated and deleted soon (from July 2021). 
+						// Developers should provide the Authentication header for all their requests to the 
+						// SoundCloud API going forward.
+						// Here’s an example of getting an access token via the client_credentials grant type:
+						// curl --request POST \
+						// --url https://api.soundcloud.com/oauth2/token \
+						// --header 'Content-Type: application/x-www-form-urlencoded' \
+						// --data client_id=CLIENT_ID \
+						// --data client_secret=CLIENT_SECRET \
+						// --data grant_type=client_credentials
 		clientaction(self);
 	} else {
-		// We could get a new/fresh each time, but then need to use API2 per below
-		// V.2 is 'public' but it needs CORS proxy :(
+		// We can get a new/fresh each time, by using API2 per below
+		// This sidesteps formal auth. (we are anonymous just like any SoundCloud site visitor is)
+		// Except ... now we look like we are coming from the wrong domain!
+		// ie: V.2 is 'public' but it needs CORS proxy :(
 		self.initialising = $.get(
-				"https://a-v2.sndcdn.com/assets/48-2160c10a-3.js", {}
-			)
+			//"https://a-v2.sndcdn.com/assets/48-2160c10a-3.js", {}
+			// "https://a-v2.sndcdn.com/assets/46-285b9963-3.js", {}
+			"https://a-v2.sndcdn.com/assets/2-2b91e95d.js", {}
+		)
 			.done(function (data) {
-				got_id = data.match(new RegExp("client_application_id:.....,client_id:(.*),env:"))[1];
+				got_id = data.match(new RegExp("web-auth\\?client_id\=(.*)&device_id"))[1];
 				got_id = got_id.replace(/"/g, "");
-				self.client_id = got_id;
-				clientaction();
+				self.client_id = got_id; //+"app_version=1630571747&app_locale=en";
+				console.log("Adopted: " + self.client_id);
+				clientaction(self);
 			})
 			.fail(function (jqXHR, textStatus, errorThrown) {
 				self.stayAlert("SC client request " + textStatus + " " + errorThrown);

@@ -2,6 +2,8 @@
 //
 // Shuffle player launch point
 //
+// for single project "?play=disquiet-junto-project-0483"
+//
 //////////////////////////////////////////////////////////////////
 
 var SCrunning;
@@ -10,7 +12,7 @@ var SCrunning;
 $(function () {
 	SCrunning = null;
 	SCrunning = new SCoperator();
-	SCrunning.configAPI("V1");
+	SCrunning.configAPI("V2");
 
 
 	////////////////////////////////////////////////////////////////
@@ -18,10 +20,28 @@ $(function () {
 
 	SCrunning.artist = "disquiet";
 
+	var queryString = window.location.search;
+	var tracklist = queryString.match(/(?:\?|\&)(?:play)\=([^&]+)/g);
+	var urls = [];
+
+	if (tracklist) {
+		tracklist.forEach(function (external) {
+			external = external.match(/\=.*/g).pop().replace("=", "");
+			urls.push("https://soundcloud.com/disquiet/sets/" + external);
+			return true;
+		});
+	}
+
+	if (urls.length > 0) {
+		SCrunning.matchPlaylists = urls;
+	}
+
 	SCrunning.getClient(function () {
 		SCrunning.getArtist(function getItems(artist) {
-			// get all artist 'TRACK' entries:
-			SCrunning.rackArtist(SCrunning.rackTracks);
+			if (urls.length == 0) {
+				// get all artist 'TRACK' entries:
+				SCrunning.rackArtist(SCrunning.rackTracks);
+			}
 			// get optionally filtered playlists:
 			SCrunning.rackCarts(SCrunning.rackTracks);
 		});

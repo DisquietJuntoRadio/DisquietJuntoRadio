@@ -2,6 +2,8 @@
 
   - Client Side Endless Shuffle Player
   - demo at --> https://disquietjuntoradio.github.io/DisquietJuntoRadio/
+  - can filter by playlists, eg:
+      ?play=disquiet-junto-project-0504&play=disquiet-junto-project-0503&play=disquiet-junto-project-0502
    
    An example of js/jQuery/HTML access to Soundcloud API features, for track streaming and metadata display.
    The "DisquietJuntoRadio" combines tracks from the Disquiet Junto to create a random playlist.
@@ -36,8 +38,40 @@
  
  -----------------------------------------------------------------------
  
- API Client:
+ Responsible Activity as an API Client: 
  
+ -----------------------------------------------------------------------
+ 
+ As an update to original notes below:
+
+ Previously this code used a client ID from an OSS project.
+ Currently to work at all, it is forced to use the V2 API.
+ A major drawback is the need for CORS-proxy. Open facing CORS-proxy hosts are prone to burnout, 
+ can garble returns, may be rate limited, and may cache results. 
+ They are intented only for DEV / TEST and PROOF-OF-CONCEPT!
+
+ Soundcloud claim ambition to re-open the V1 API to new developers...
+ That would be great!
+ (Otherwise, also great, would be a slightly restrictive built-for-purpose CORS-proxy 
+ accepting only requests from github.io bound for Soundcloud APIV2. Anyone?)
+ 
+		// All client id's in the wild have been redacted!
+		// see: https://developers.soundcloud.com/blog/security-updates-api
+		// so this is broken forever:
+		self.client_id = "08f79801a998c381762ec5b15e4914d5";
+		// July 1st, 2021 by Rahul Rumalla
+			// As part of our continuous effort toward making improvements to our API 
+			// with the hope that we can relaunch API access to all developers, 
+			// we’re making some critical security improvements.
+				// 		Use Client Credentials Grant for Server-Side Integrations
+						// Currently, to access the public resources of the platform, server-side integrations 
+						// with our API only require a client_id in the URL’s query parameter. 
+						// We’ll be strengthening our authorization here by making all public resources on the API 
+						// only accessible to apps that have been authorized with the client_credentials grant. 
+						// This will enable the app to capture both the access_token and the refresh_token 
+						// to then fetch the resources from the API. 
+						// Please note that the use of client_id will be deprecated and deleted
+            
  -----------------------------------------------------------------------
  
  The Soundcloud API requires a client ID for access.
